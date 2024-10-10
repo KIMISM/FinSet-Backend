@@ -77,6 +77,7 @@ CREATE TABLE `tbl_fund` (
                             `fund_charge` VARCHAR(50) NULL,
                             `fund_regdate` DATE NULL,
                             `fund_imgUrl` VARCHAR(255) NULL COMMENT '이미지 url',
+                            `fund_link` TEXT NULL COMMENT '직접입력',
                             PRIMARY KEY (`fno`)
 );
 
@@ -140,7 +141,7 @@ CREATE TABLE `tbl_forex_chart` (
                                    `fecno` INT NOT NULL AUTO_INCREMENT,
                                    `forex_basic_rate` DOUBLE NOT NULL COMMENT 'deal_bas_r',
                                    `forex_datetime` DATE NOT NULL COMMENT '직접입력',
-                                   `feno` INT NOT NULL COMMENT 'CNH 1, EUR 2, GBP 3, JPY(100) 4, USD 5',
+                                   `feno` INT NOT NULL COMMENT 'CNH 1, EUR 2, GBP 3, CHF 4, USD 5',
                                    PRIMARY KEY (`fecno`),
                                    FOREIGN KEY (`feno`) REFERENCES `tbl_forex`(`feno`)
 );
@@ -328,7 +329,8 @@ INSERT INTO tbl_fund (
     fund_type,
     fund_charge,
     fund_regdate,
-    fund_imgUrl
+    fund_imgUrl,
+    fund_link
 ) VALUES
       (
           '수익률',
@@ -342,7 +344,8 @@ INSERT INTO tbl_fund (
           '글로벌리츠재간접',
           '수수료 없음',
           '2020-02-05',
-          '/asset/logo/Fund/SamSungJaSan.jpg'
+          '/asset/logo/Fund/SamSungJaSan.jpg',
+          'https://m.samsungfund.com/fund/product/view.do?id=K55105D00505'
       ),
       (
           '수익률',
@@ -356,7 +359,8 @@ INSERT INTO tbl_fund (
           '베어마켓',
           '수수료 없음',
           '2016-11-03',
-          '/asset/logo/Fund/NHAmundi.jpg'
+          '/asset/logo/Fund/NHAmundi.jpg',
+          'https://m.nhqv.com/finance/fund/fundView?pdCd=NFNM11'
       ),
       (
           '수익률',
@@ -370,7 +374,8 @@ INSERT INTO tbl_fund (
           '기타국가주식',
           '수수료 없음',
           '2008-01-11',
-          '/asset/logo/Fund/NHAmundi.jpg'
+          '/asset/logo/Fund/NHAmundi.jpg',
+          'https://m.nhqv.com/finance/fund/fundView?pdCd=NANC37'
       ),
       (
           '수익률',
@@ -384,7 +389,8 @@ INSERT INTO tbl_fund (
           '글로벌리츠재간접',
           '수수료 없음',
           '2016-09-02',
-          '/asset/logo/Fund/HANAFund.jpg'
+          '/asset/logo/Fund/HANAFund.jpg',
+          'https://www.hanaam.com/goods/goods/goodsDetail.jsp?fund=65233'
       ),
       (
           '수익률',
@@ -398,7 +404,8 @@ INSERT INTO tbl_fund (
           '공공서비스섹터',
           '수수료 없음',
           '2015-03-12',
-          '/asset/logo/Fund/HANAFund.jpg'
+          '/asset/logo/Fund/HANAFund.jpg',
+          'https://www.hanaam.com/goods/goods/goodsDetail.jsp?fund=65130'
       ),
       (
           '수익률',
@@ -412,7 +419,8 @@ INSERT INTO tbl_fund (
           '동남아주식',
           '수수료 없음',
           '2008-03-11',
-          '/asset/logo/Fund/SamSungJaSan.jpg'
+          '/asset/logo/Fund/SamSungJaSan.jpg',
+          'https://m.samsungfund.com/fund/product/view.do?id=KR5105805919'
       ),
       (
           '수익률',
@@ -426,7 +434,8 @@ INSERT INTO tbl_fund (
           '글로벌리츠재간접',
           '수수료 없음',
           '2019-09-20',
-          '/asset/logo/Fund/KBFund.jpg'
+          '/asset/logo/Fund/KBFund.jpg',
+          'https://www.kbam.co.kr/fundSearch/fundDetail?fundCd=2909'
       ),
       (
           '판매액',
@@ -440,7 +449,8 @@ INSERT INTO tbl_fund (
           '초단기채권',
           '수수료 없음',
           '2023-07-14',
-          '/asset/logo/Fund/KBFund.jpg'
+          '/asset/logo/Fund/KBFund.jpg',
+          'https://www.kbam.co.kr/fundSearch/fundDetail?fundCd=32D5'
       ),
       (
           '판매액',
@@ -454,7 +464,8 @@ INSERT INTO tbl_fund (
           '초단기채권',
           '수수료 없음',
           '2016-08-31',
-          '/asset/logo/Fund/HanwhaFund.jpg'
+          '/asset/logo/Fund/HanwhaFund.jpg',
+          'https://www.hanwhawm.com/main/finance/fundInfo/FI141_2.cmd?p=200&item_cd=3103251'
       ),
       (
           '판매액',
@@ -468,7 +479,8 @@ INSERT INTO tbl_fund (
           '일반채권',
           '수수료 없음',
           '2008-11-03',
-          '/asset/logo/Fund/Korea.png'
+          '/asset/logo/Fund/Korea.png',
+          'https://www.hanwhawm.com/main/finance/fundInfo/FI141_2.cmd?p=200&item_cd=3106951'
       ),
       (
           '판매액',
@@ -482,7 +494,8 @@ INSERT INTO tbl_fund (
           '초단기채권',
           '수수료 없음',
           '2023-01-04',
-          '/asset/logo/Fund/Corate.png'
+          '/asset/logo/Fund/Corate.png',
+          'https://www.koreitasset.com/investment/fund-view/l7S3R5FwIpsu6CMq?classUid=m5JKByHVtm74H1wR'
       ),
       (
           '판매액',
@@ -496,7 +509,8 @@ INSERT INTO tbl_fund (
           '기타인덱스',
           '수수료 없음',
           '2010-12-29',
-          '/asset/logo/Fund/HanwhaFund.jpg'
+          '/asset/logo/Fund/HanwhaFund.jpg',
+          'https://www.hanwhawm.com/main/finance/fundInfo/FI141_2.cmd?p=200&item_cd=5800151'
       ),
       (
           '판매액',
@@ -510,7 +524,8 @@ INSERT INTO tbl_fund (
           '일반주식혼합',
           '투자금액의 0.50%',
           '2018-04-05',
-          '/asset/logo/Fund/BrainFund.jpg'
+          '/asset/logo/Fund/BrainFund.jpg',
+          'http://brainib.com/k_fund_info2.html?fund_cd=P02ZZ'
       ),
       (
           '판매액',
@@ -524,7 +539,8 @@ INSERT INTO tbl_fund (
           '일반채권',
           '수수료 없음',
           '2016-04-18',
-          '/asset/logo/Fund/KBFund.jpg'
+          '/asset/logo/Fund/KBFund.jpg',
+          'https://www.kbam.co.kr/fundSearch/fundDetail?fundCd=2N45'
       ),
       (
           '적립액',
@@ -538,7 +554,8 @@ INSERT INTO tbl_fund (
           '정보기술섹터',
           '투자금액의 0.50%',
           '2016-11-07',
-          '/asset/logo/Fund/fidelityFund.png'
+          '/asset/logo/Fund/fidelityFund.png',
+          'https://www.fidelity.co.kr/fund-information/factsheet/TEC/G'
       ),
       (
           '적립액',
@@ -552,7 +569,8 @@ INSERT INTO tbl_fund (
           '정보기술섹터',
           '투자금액의 0.50%',
           '2017-10-31',
-          '/asset/logo/Fund/Korea.png'
+          '/asset/logo/Fund/Korea.png',
+          'https://securities.koreainvestment.com/main/mall/openfund/FundInfo_Pop.jsp?cmd=TF02a0000001_New&pfundCd=070302'
       ),
       (
           '적립액',
@@ -566,7 +584,8 @@ INSERT INTO tbl_fund (
           '북미주식',
           '투자금액의 0.50%',
           '2014-04-14',
-          '/asset/logo/Fund/ABFund.jpg'
+          '/asset/logo/Fund/ABFund.jpg',
+          'https://www.abfunds.co.kr/ko/funds/onshore/equities/american-growth-securities-investment-trust.ae.KR0000000016.html'
       ),
       (
           '적립액',
@@ -580,7 +599,8 @@ INSERT INTO tbl_fund (
           '인도주식',
           '투자금액의 0.50%',
           '2015-09-23',
-          '/asset/logo/Fund/MiraeAsset.png'
+          '/asset/logo/Fund/MiraeAsset.png',
+          'https://investments.miraeasset.com/fund/view.do?fundGb=2&fundCd=537200&childFundGb=2&childFundCd=537202'
       ),
       (
           '적립액',
@@ -594,7 +614,9 @@ INSERT INTO tbl_fund (
           '정보기술섹터',
           '수수료 없음',
           '2015-06-17',
-          '/asset/logo/Fund/fidelityFund.png'
+          '/asset/logo/Fund/fidelityFund.png',
+          'https://www.fidelity.co.kr/fund-information/factsheet/57127/D'
+
       ),
       (
           '적립액',
@@ -608,7 +630,8 @@ INSERT INTO tbl_fund (
           '글로벌주식',
           '투자금액의 0.50%',
           '2021-06-14',
-          '/asset/logo/Fund/KBFund.jpg'
+          '/asset/logo/Fund/KBFund.jpg',
+          'https://www.kbam.co.kr/fundSearch/fundDetail?fundCd=31B3'
       ),
       (
           '적립액',
@@ -622,8 +645,10 @@ INSERT INTO tbl_fund (
           '일반주식',
           '투자금액의 0.50%',
           '2019-10-23',
-          '/asset/logo/Fund/MiraeAsset.png'
+          '/asset/logo/Fund/MiraeAsset.png',
+          'https://investments.miraeasset.com/fund/view.do?fundGb=2&fundCd=536840&childFundGb=2&childFundCd=53684A'
       );
+
 
 
 INSERT INTO tbl_fund_chart (fund_name, fund_datetime, fund_val, ben_val, type_val) VALUES
@@ -1549,110 +1574,110 @@ INSERT INTO tbl_forex(forex_name, forex_basic_rate, forex_buy, forex_sell, forex
     ('중국 위안(CNH)',190.39,188.48,192.29, '/asset/logo/Forex/CNH.png'),
     ('유럽 유로(EUR)',1495.24,1480.28,1510.19, '/asset/logo/Forex/EU.jpg'),
     ('영국 파운드(GBP)',1746.21,1728.74,1763.67, '/asset/logo/Forex/GBP.png'),
-    ('일본 엔(JPY)',929.08,919.78,938.37, '/asset/logo/Forex/Japan.png'),
+    ('스위스 프랑(CHF)',929.08,919.78,938.37, '/asset/logo/Forex/Japan.png'),
     ('미국 달러(USD)',1367.70,1354.02,1381.37, '/asset/logo/Forex/USA.png');
 
 INSERT INTO `tbl_forex_chart` (forex_basic_rate, forex_datetime, feno) VALUES
-                                                                                 (187.96, '2024-09-13', 1),
-                                                                                 (1483.54, '2024-09-13', 2),
-                                                                                 (1758.56, '2024-09-13', 3),
-                                                                                 (945.74, '2024-09-13', 4),
-                                                                                 (1339.6, '2024-09-13', 5),
-                                                                                 (188.25, '2024-09-12', 1),
-                                                                                 (1476.01, '2024-09-12', 2),
-                                                                                 (1748.09, '2024-09-12', 3),
-                                                                                 (940.59, '2024-09-12', 4),
-                                                                                 (1340.3, '2024-09-12', 5),
-                                                                                 (188.69, '2024-09-11', 1),
-                                                                                 (1481.49, '2024-09-11', 2),
-                                                                                 (1758.61, '2024-09-11', 3),
-                                                                                 (943.87, '2024-09-11', 4),
-                                                                                 (1344.3, '2024-09-11', 5),
-                                                                                 (188.51, '2024-09-10', 1),
-                                                                                 (1478.47, '2024-09-10', 2),
-                                                                                 (1750.93, '2024-09-10', 3),
-                                                                                 (935.83, '2024-09-10', 4),
-                                                                                 (1339.5, '2024-09-10', 5),
-                                                                                 (187.74, '2024-09-09', 1),
-                                                                                 (1475.21, '2024-09-09', 2),
-                                                                                 (1747.55, '2024-09-09', 3),
-                                                                                 (935.29, '2024-09-09', 4),
-                                                                                 (1330.4, '2024-09-09', 5),
-                                                                                 (188.05, '2024-09-06', 1),
-                                                                                 (1484.14, '2024-09-06', 2),
-                                                                                 (1760.38, '2024-09-06', 3),
-                                                                                 (931.81, '2024-09-06', 4),
-                                                                                 (1335.8, '2024-09-06', 5),
-                                                                                 (188.78, '2024-09-05', 1),
-                                                                                 (1487.41, '2024-09-05', 2),
-                                                                                 (1764.19, '2024-09-05', 3),
-                                                                                 (934.22, '2024-09-05', 4),
-                                                                                 (1342.0, '2024-09-05', 5),
-                                                                                 (188.31, '2024-09-04', 1),
-                                                                                 (1481.27, '2024-09-04', 2),
-                                                                                 (1758.12, '2024-09-04', 3),
-                                                                                 (923.43, '2024-09-04', 4),
-                                                                                 (1341.0, '2024-09-04', 5),
-                                                                                 (188.54, '2024-09-03', 1),
-                                                                                 (1481.45, '2024-09-03', 2),
-                                                                                 (1759.18, '2024-09-03', 3),
-                                                                                 (911.12, '2024-09-03', 4),
-                                                                                 (1338.8, '2024-09-03', 5),
-                                                                                 (188.35, '2024-09-02', 1),
-                                                                                 (1474.35, '2024-09-02', 2),
-                                                                                 (1752.79, '2024-09-02', 3),
-                                                                                 (910.69, '2024-09-02', 4),
-                                                                                 (1334.8, '2024-09-02', 5),
-                                                                                 (187.56, '2024-08-30', 1),
-                                                                                 (1479.58, '2024-08-30', 2),
-                                                                                 (1757.99, '2024-08-30', 3),
-                                                                                 (921.75, '2024-08-30', 4),
-                                                                                 (1335.3, '2024-08-30', 5),
-                                                                                 (187.39, '2024-08-29', 1),
-                                                                                 (1484.79, '2024-08-29', 2),
-                                                                                 (1760.74, '2024-08-29', 3),
-                                                                                 (925.17, '2024-08-29', 4),
-                                                                                 (1334.7, '2024-08-29', 5),
-                                                                                 (186.73, '2024-08-28', 1),
-                                                                                 (1487.85, '2024-08-28', 2),
-                                                                                 (1764.04, '2024-08-28', 3),
-                                                                                 (925.21, '2024-08-28', 4),
-                                                                                 (1330.4, '2024-08-28', 5),
-                                                                                 (186.0, '2024-08-27', 1),
-                                                                                 (1478.27, '2024-08-27', 2),
-                                                                                 (1746.03, '2024-08-27', 3),
-                                                                                 (917.75, '2024-08-27', 4),
-                                                                                 (1323.9, '2024-08-27', 5),
-                                                                                 (187.6, '2024-08-26', 1),
-                                                                                 (1499.91, '2024-08-26', 2),
-                                                                                 (1770.34, '2024-08-26', 3),
-                                                                                 (933.05, '2024-08-26', 4),
-                                                                                 (1340.1, '2024-08-26', 5),
-                                                                                 (187.6, '2024-08-23', 1),
-                                                                                 (1484.99, '2024-08-23', 2),
-                                                                                 (1749.29, '2024-08-23', 3),
-                                                                                 (914.34, '2024-08-23', 4),
-                                                                                 (1335.9, '2024-08-23', 5),
-                                                                                 (186.91, '2024-08-22', 1),
-                                                                                 (1486.49, '2024-08-22', 2),
-                                                                                 (1744.64, '2024-08-22', 3),
-                                                                                 (919.63, '2024-08-22', 4),
-                                                                                 (1332.4, '2024-08-22', 5),
-                                                                                 (186.57, '2024-08-21', 1),
-                                                                                 (1482.25, '2024-08-21', 2),
-                                                                                 (1735.86, '2024-08-21', 3),
-                                                                                 (917.07, '2024-08-21', 4),
-                                                                                 (1332.0, '2024-08-21', 5),
-                                                                                 (187.01, '2024-08-20', 1),
-                                                                                 (1483.02, '2024-08-20', 2),
-                                                                                 (1737.8, '2024-08-20', 3),
-                                                                                 (911.84, '2024-08-20', 4),
-                                                                                 (1337.8, '2024-08-20', 5),
-                                                                                 (189.42, '2024-08-19', 1),
-                                                                                 (1499.44, '2024-08-19', 2),
-                                                                                 (1760.17, '2024-08-19', 3),
-                                                                                 (919.89, '2024-08-19', 4),
-                                                                                 (1360.1, '2024-08-19', 5);
+                                                                           (187.96, '2024-09-13', 1),
+                                                                           (1483.54, '2024-09-13', 2),
+                                                                           (1758.56, '2024-09-13', 3),
+                                                                           (945.74, '2024-09-13', 4),
+                                                                           (1339.6, '2024-09-13', 5),
+                                                                           (188.25, '2024-09-12', 1),
+                                                                           (1476.01, '2024-09-12', 2),
+                                                                           (1748.09, '2024-09-12', 3),
+                                                                           (940.59, '2024-09-12', 4),
+                                                                           (1340.3, '2024-09-12', 5),
+                                                                           (188.69, '2024-09-11', 1),
+                                                                           (1481.49, '2024-09-11', 2),
+                                                                           (1758.61, '2024-09-11', 3),
+                                                                           (943.87, '2024-09-11', 4),
+                                                                           (1344.3, '2024-09-11', 5),
+                                                                           (188.51, '2024-09-10', 1),
+                                                                           (1478.47, '2024-09-10', 2),
+                                                                           (1750.93, '2024-09-10', 3),
+                                                                           (935.83, '2024-09-10', 4),
+                                                                           (1339.5, '2024-09-10', 5),
+                                                                           (187.74, '2024-09-09', 1),
+                                                                           (1475.21, '2024-09-09', 2),
+                                                                           (1747.55, '2024-09-09', 3),
+                                                                           (935.29, '2024-09-09', 4),
+                                                                           (1330.4, '2024-09-09', 5),
+                                                                           (188.05, '2024-09-06', 1),
+                                                                           (1484.14, '2024-09-06', 2),
+                                                                           (1760.38, '2024-09-06', 3),
+                                                                           (931.81, '2024-09-06', 4),
+                                                                           (1335.8, '2024-09-06', 5),
+                                                                           (188.78, '2024-09-05', 1),
+                                                                           (1487.41, '2024-09-05', 2),
+                                                                           (1764.19, '2024-09-05', 3),
+                                                                           (934.22, '2024-09-05', 4),
+                                                                           (1342.0, '2024-09-05', 5),
+                                                                           (188.31, '2024-09-04', 1),
+                                                                           (1481.27, '2024-09-04', 2),
+                                                                           (1758.12, '2024-09-04', 3),
+                                                                           (923.43, '2024-09-04', 4),
+                                                                           (1341.0, '2024-09-04', 5),
+                                                                           (188.54, '2024-09-03', 1),
+                                                                           (1481.45, '2024-09-03', 2),
+                                                                           (1759.18, '2024-09-03', 3),
+                                                                           (911.12, '2024-09-03', 4),
+                                                                           (1338.8, '2024-09-03', 5),
+                                                                           (188.35, '2024-09-02', 1),
+                                                                           (1474.35, '2024-09-02', 2),
+                                                                           (1752.79, '2024-09-02', 3),
+                                                                           (910.69, '2024-09-02', 4),
+                                                                           (1334.8, '2024-09-02', 5),
+                                                                           (187.56, '2024-08-30', 1),
+                                                                           (1479.58, '2024-08-30', 2),
+                                                                           (1757.99, '2024-08-30', 3),
+                                                                           (921.75, '2024-08-30', 4),
+                                                                           (1335.3, '2024-08-30', 5),
+                                                                           (187.39, '2024-08-29', 1),
+                                                                           (1484.79, '2024-08-29', 2),
+                                                                           (1760.74, '2024-08-29', 3),
+                                                                           (925.17, '2024-08-29', 4),
+                                                                           (1334.7, '2024-08-29', 5),
+                                                                           (186.73, '2024-08-28', 1),
+                                                                           (1487.85, '2024-08-28', 2),
+                                                                           (1764.04, '2024-08-28', 3),
+                                                                           (925.21, '2024-08-28', 4),
+                                                                           (1330.4, '2024-08-28', 5),
+                                                                           (186.0, '2024-08-27', 1),
+                                                                           (1478.27, '2024-08-27', 2),
+                                                                           (1746.03, '2024-08-27', 3),
+                                                                           (917.75, '2024-08-27', 4),
+                                                                           (1323.9, '2024-08-27', 5),
+                                                                           (187.6, '2024-08-26', 1),
+                                                                           (1499.91, '2024-08-26', 2),
+                                                                           (1770.34, '2024-08-26', 3),
+                                                                           (933.05, '2024-08-26', 4),
+                                                                           (1340.1, '2024-08-26', 5),
+                                                                           (187.6, '2024-08-23', 1),
+                                                                           (1484.99, '2024-08-23', 2),
+                                                                           (1749.29, '2024-08-23', 3),
+                                                                           (914.34, '2024-08-23', 4),
+                                                                           (1335.9, '2024-08-23', 5),
+                                                                           (186.91, '2024-08-22', 1),
+                                                                           (1486.49, '2024-08-22', 2),
+                                                                           (1744.64, '2024-08-22', 3),
+                                                                           (919.63, '2024-08-22', 4),
+                                                                           (1332.4, '2024-08-22', 5),
+                                                                           (186.57, '2024-08-21', 1),
+                                                                           (1482.25, '2024-08-21', 2),
+                                                                           (1735.86, '2024-08-21', 3),
+                                                                           (917.07, '2024-08-21', 4),
+                                                                           (1332.0, '2024-08-21', 5),
+                                                                           (187.01, '2024-08-20', 1),
+                                                                           (1483.02, '2024-08-20', 2),
+                                                                           (1737.8, '2024-08-20', 3),
+                                                                           (911.84, '2024-08-20', 4),
+                                                                           (1337.8, '2024-08-20', 5),
+                                                                           (189.42, '2024-08-19', 1),
+                                                                           (1499.44, '2024-08-19', 2),
+                                                                           (1760.17, '2024-08-19', 3),
+                                                                           (919.89, '2024-08-19', 4),
+                                                                           (1360.1, '2024-08-19', 5);
 
 
 INSERT INTO tbl_news (
@@ -1906,4 +1931,97 @@ insert into tbl_type value (default, '외환');
 --                                                           (2, 3, '3번 주식, 최근 변동성이 커서 대응 전략을 고민 중입니다.'),
 --                                                           (1, 4, '4번 주식의 배당금 정책이 궁금합니다.'),
 --                                                           (2, 5, '5번 주식, 중장기적인 투자 계획에 대한 의견 부탁드립니다.');
+-- 스프링 배치 기본 스키마 (MySQL)
+CREATE TABLE BATCH_JOB_INSTANCE  (
+                                     JOB_INSTANCE_ID BIGINT  NOT NULL PRIMARY KEY ,
+                                     VERSION BIGINT ,
+                                     JOB_NAME VARCHAR(100) NOT NULL,
+                                     JOB_KEY VARCHAR(32) NOT NULL,
+                                     constraint JOB_INST_UN unique (JOB_NAME, JOB_KEY)
+);
 
+CREATE TABLE BATCH_JOB_EXECUTION  (
+                                      JOB_EXECUTION_ID BIGINT  NOT NULL PRIMARY KEY ,
+                                      VERSION BIGINT  ,
+                                      JOB_INSTANCE_ID BIGINT NOT NULL,
+                                      CREATE_TIME DATETIME NOT NULL,
+                                      START_TIME DATETIME DEFAULT NULL ,
+                                      END_TIME DATETIME DEFAULT NULL ,
+                                      STATUS VARCHAR(10) ,
+                                      EXIT_CODE VARCHAR(2500) ,
+                                      EXIT_MESSAGE VARCHAR(2500) ,
+                                      LAST_UPDATED DATETIME,
+                                      JOB_CONFIGURATION_LOCATION VARCHAR(2500) NULL,
+                                      constraint JOB_INST_EXEC_FK foreign key (JOB_INSTANCE_ID)
+                                          references BATCH_JOB_INSTANCE(JOB_INSTANCE_ID)
+);
+
+CREATE TABLE BATCH_JOB_EXECUTION_PARAMS  (
+                                             JOB_EXECUTION_ID BIGINT NOT NULL ,
+                                             TYPE_CD VARCHAR(6) NOT NULL ,
+                                             KEY_NAME VARCHAR(100) NOT NULL ,
+                                             STRING_VAL VARCHAR(250) ,
+                                             DATE_VAL DATETIME DEFAULT NULL ,
+                                             LONG_VAL BIGINT ,
+                                             DOUBLE_VAL DOUBLE PRECISION ,
+                                             IDENTIFYING CHAR(1) NOT NULL ,
+                                             constraint JOB_EXEC_PARAMS_FK foreign key (JOB_EXECUTION_ID)
+                                                 references BATCH_JOB_EXECUTION(JOB_EXECUTION_ID)
+);
+
+CREATE TABLE BATCH_STEP_EXECUTION  (
+                                       STEP_EXECUTION_ID BIGINT NOT NULL PRIMARY KEY ,
+                                       VERSION BIGINT NOT NULL,
+                                       STEP_NAME VARCHAR(100) NOT NULL,
+                                       JOB_EXECUTION_ID BIGINT NOT NULL,
+                                       START_TIME DATETIME NOT NULL ,
+                                       END_TIME DATETIME DEFAULT NULL ,
+                                       STATUS VARCHAR(10) ,
+                                       COMMIT_COUNT BIGINT ,
+                                       READ_COUNT BIGINT ,
+                                       FILTER_COUNT BIGINT ,
+                                       WRITE_COUNT BIGINT ,
+                                       READ_SKIP_COUNT BIGINT ,
+                                       WRITE_SKIP_COUNT BIGINT ,
+                                       PROCESS_SKIP_COUNT BIGINT ,
+                                       ROLLBACK_COUNT BIGINT ,
+                                       EXIT_CODE VARCHAR(2500) ,
+                                       EXIT_MESSAGE VARCHAR(2500) ,
+                                       LAST_UPDATED DATETIME,
+                                       constraint JOB_EXEC_STEP_FK foreign key (JOB_EXECUTION_ID)
+                                           references BATCH_JOB_EXECUTION(JOB_EXECUTION_ID)
+);
+
+CREATE TABLE BATCH_STEP_EXECUTION_CONTEXT  (
+                                               STEP_EXECUTION_ID BIGINT NOT NULL PRIMARY KEY,
+                                               SHORT_CONTEXT VARCHAR(2500) NOT NULL,
+                                               SERIALIZED_CONTEXT TEXT ,
+                                               constraint STEP_EXEC_CTX_FK foreign key (STEP_EXECUTION_ID)
+                                                   references BATCH_STEP_EXECUTION(STEP_EXECUTION_ID)
+);
+
+CREATE TABLE BATCH_JOB_EXECUTION_CONTEXT  (
+                                              JOB_EXECUTION_ID BIGINT NOT NULL PRIMARY KEY,
+                                              SHORT_CONTEXT VARCHAR(2500) NOT NULL,
+                                              SERIALIZED_CONTEXT TEXT ,
+                                              constraint JOB_EXEC_CTX_FK foreign key (JOB_EXECUTION_ID)
+                                                  references BATCH_JOB_EXECUTION(JOB_EXECUTION_ID)
+);
+
+CREATE TABLE BATCH_JOB_SEQ (
+                               ID BIGINT NOT NULL,
+                               UNIQUE KEY (ID)
+);
+
+INSERT INTO BATCH_JOB_SEQ VALUES(0);
+
+CREATE TABLE BATCH_JOB_EXECUTION_SEQ (
+                                         ID BIGINT NOT NULL,
+                                         UNIQUE KEY (ID)
+);
+
+INSERT INTO BATCH_JOB_EXECUTION_SEQ VALUES(0);
+
+
+-- 초기값 삽입
+INSERT INTO BATCH_JOB_EXECUTION_SEQ (ID) VALUES (1);
