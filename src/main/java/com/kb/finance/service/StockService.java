@@ -4,7 +4,6 @@ import com.kb.finance.dto.*;
 import com.kb.finance.mapper.StockMapper;
 import com.kb.testService.dto.StockToken;
 import com.kb.testService.service.TokenService;
-import com.kb.wish.dto.Wish;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
@@ -81,7 +80,6 @@ public class StockService {
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(responseEntity.getBody());
         JSONObject jsonObject = (JSONObject) obj;
-//        JSONObject output = (JSONObject) jsonObject.get("output2");
         JSONArray jsonArray = (JSONArray) jsonObject.get("output2");
 
         List<StockChart> stockCharts = new ArrayList<>();
@@ -98,6 +96,9 @@ public class StockService {
             log.info("No stocks found");
             throw new NoSuchElementException();
         }
+
+
+
         return stockCharts;
     }
 
@@ -147,9 +148,9 @@ public class StockService {
         return stockSymbol;
     }
 
-    public List<Community> getCommunities(long sno, long uno) {
+    public List<Community> getCommunities(long sno, long uno, String sort) {
 
-        List<Community> communities = mapper.selectCommunity(sno, uno);
+        List<Community> communities = mapper.selectCommunity(sno, uno, sort);
 
         for(Community community : communities) {
             System.out.println(community);

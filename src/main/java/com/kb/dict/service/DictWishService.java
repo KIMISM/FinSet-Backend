@@ -2,6 +2,8 @@ package com.kb.dict.service;
 
 import com.kb.dict.dto.Dict;
 import com.kb.dict.dto.DictWish;
+import com.kb.dict.dto.DictWishOrder;
+import com.kb.dict.dto.DictWishOrderDTO;
 import com.kb.dict.mapper.DictWishMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +36,22 @@ public class DictWishService {
     }
     public int updateWish(DictWish wish) {
        return wishMapper.updateWish(wish);
+    }
+
+    public int updateWishOrder(DictWishOrderDTO dictWishOrderDTO) {
+        List<DictWishOrder> wishOrders = dictWishOrderDTO.getDictWishOrders();
+        int result = 1;
+
+        for(DictWishOrder dictWishOrder : wishOrders) {
+
+            if (wishMapper.updateWishOrder(dictWishOrder) != 1) {
+                result = 0;
+                throw new NoSuchElementException();
+            }
+        }
+
+
+        return result;
     }
 
 

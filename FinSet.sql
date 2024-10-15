@@ -23,6 +23,7 @@ CREATE TABLE `tbl_user` (
                             `status` INT NOT NULL DEFAULT 1 COMMENT '기본: 1 / 탈퇴: 0',
                             `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                             `status_date` TIMESTAMP NULL,
+                            `kakao_id` VARCHAR(50),
                             PRIMARY KEY (`uno`),
                             FOREIGN KEY (`utno`) REFERENCES `tbl_user_type`(`utno`)
 );
@@ -42,8 +43,11 @@ CREATE TABLE `tbl_stock` (
                              `stock_price` INT NOT NULL COMMENT '(주식현재가 시세) stck_prpr',
                              `price_change_rate` DOUBLE NOT NULL COMMENT '(주식현재가 시세) prdy_ctrt',
                              `stock_volume` INT NOT NULL COMMENT '(주식현재가 시셰) acml_vol',
+                             `stock_sales` VARCHAR(255) NOT NULL COMMENT '(주식 매출가)',
+                             `stock_profit` VARCHAR(255) NOT NULL COMMENT '(주식 영업이익)',
+                             `stock_income` VARCHAR(255) NOT NULL COMMENT '(주식 순수익)',
                              `stock_imgUrl` VARCHAR(255) NULL COMMENT '이미지 url',
-                             PRIMARY KEY (`sno`)
+                              PRIMARY KEY (`sno`)
 );
 
 CREATE TABLE `tbl_deposit` (
@@ -113,9 +117,8 @@ CREATE TABLE `tbl_community` (
 CREATE TABLE `tbl_community_like` (
                                       `bno` INT NOT NULL,                          -- 커뮤니티 ID (tbl_community의 Foreign Key)
                                       `uno` INT NOT NULL,                          -- 사용자 ID (tbl_user의 Foreign Key)
-                                      `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- 등록 날짜
-                                      FOREIGN KEY (`uno`) REFERENCES `tbl_user`(`uno`),
-                                      FOREIGN KEY (`bno`) REFERENCES `tbl_community`(`bno`)
+                                      FOREIGN KEY (`uno`) REFERENCES `tbl_user`(`uno`) on delete cascade,
+                                      FOREIGN KEY (`bno`) REFERENCES `tbl_community`(`bno`) on delete cascade
 );
 
 CREATE TABLE `tbl_stock_chart` (
@@ -141,7 +144,7 @@ CREATE TABLE `tbl_forex_chart` (
                                    `fecno` INT NOT NULL AUTO_INCREMENT,
                                    `forex_basic_rate` DOUBLE NOT NULL COMMENT 'deal_bas_r',
                                    `forex_datetime` DATE NOT NULL COMMENT '직접입력',
-                                   `feno` INT NOT NULL COMMENT 'CNH 1, EUR 2, GBP 3, CHF 4, USD 5',
+                                   `feno` INT NOT NULL COMMENT 'CNH 1, EUR 2, GBP 3, JPY 4, USD 5',
                                    PRIMARY KEY (`fecno`),
                                    FOREIGN KEY (`feno`) REFERENCES `tbl_forex`(`feno`)
 );
@@ -179,6 +182,7 @@ CREATE TABLE `tbl_dict_wish` (
                                  `uno` INT NOT NULL,
                                  `dino` INT NOT NULL,
                                  `memo` TEXT NULL,
+                                 `dict_order` INT NOT NULL,
                                  `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
                                  PRIMARY KEY (`dwno`),
@@ -198,6 +202,7 @@ CREATE TABLE `tbl_installment` (
                                    `installment_amount` TEXT NULL COMMENT 'max_limit',
                                    `installment_way` VARCHAR(50) NULL COMMENT 'join_way',
                                    `installment_target` VARCHAR(50) NULL COMMENT 'join_member',
+                                   `installment_link` TEXT NULL COMMENT '직접입력',
                                    `installment_imgUrl` VARCHAR(255) NULL COMMENT '이미지 url',
                                    PRIMARY KEY (`ino`)
 );
@@ -217,15 +222,6 @@ CREATE TABLE `tbl_kospi` (
                              PRIMARY KEY (`kno`)
 );
 
-CREATE TABLE `tbl_keyword` (
-                               `keno` INT NOT NULL AUTO_INCREMENT,
-                               `uno` INT NOT NULL,
-                               `keyword` VARCHAR(255) NOT NULL,
-                               `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                               PRIMARY KEY (`keno`),
-                               FOREIGN KEY (`uno`) REFERENCES `tbl_user`(`uno`)
-);
-
 INSERT INTO tbl_deposit (
     deposit_category,
     deposit_name,
@@ -241,35 +237,44 @@ INSERT INTO tbl_deposit (
     deposit_imgUrl
 )
 VALUES
-    ('복리/단리', 'e-그린세이브예금', '우한국스탠다드차타드은행', '3.37', '3.37', '1', '3', '1000000000', '인터넷,스마트폰', '개인(개인사업자 포함)', '직접입력', '/asset/logo/Bank/SCbank.jpg'),
-    ('단리', '스마트정기예금', '신한은행', '2.95', '2.95', '2', '4', '500000000', '인터넷', '개인', '자동입력', '/asset/logo/Bank/Shinhan.png'),
-    ('복리', '프리미엄예금', '국민은행', '3.50', '3.50', '1', '6', '2000000000', '스마트폰', '개인(개인사업자 포함)', '직접입력', '/asset/logo/Bank/KB.jpg'),
-    ('단리', '특별정기예금', '우리은행', '2.80', '2.80', '3', '5', '1500000000', '인터넷', '개인', '자동입력', '/asset/logo/Bank/Wooribank.jpg'),
-    ('복리/단리', '온라인정기예금', '하나은행', '3.25', '3.25', '2', '4', '300000000', '스마트폰', '개인', '직접입력', '/asset/logo/Bank/HANA.png'),
-    ('복리', '우대정기예금', '농협은행', '3.15', '3.15', '1', '5', '800000000', '인터넷,스마트폰', '개인(개인사업자 포함)', '자동입력', '/asset/logo/Bank/NH.jpg'),
-    ('단리', '정기예금', '기업은행', '2.70', '2.70', '3', '6', '100000000', '인터넷', '개인', '직접입력', '/asset/logo/Bank/IBK.png'),
-    ('복리', '투자예금', 'SC제일은행', '3.45', '3.45', '2', '4', '1200000000', '스마트폰', '개인(개인사업자 포함)', '자동입력', '/asset/logo/Bank/SCbank.jpg'),
-    ('단리', '정기적금', '대구은행', '2.85', '2.85', '3', '5', '500000000', '인터넷', '개인', '직접입력', '/asset/logo/Bank/Daegu.jpg'),
-    ('복리/단리', 'e-정기예금', '광주은행', '3.20', '3.20', '1', '6', '700000000', '스마트폰', '개인(개인사업자 포함)', '자동입력', '/asset/logo/Bank/GwangJu.png'),
-    ('단리', '하이정기예금', '전북은행', '2.75', '2.75', '2', '4', '400000000', '인터넷', '개인', '직접입력', '/asset/logo/Bank/JeonBuk.png'),
-    ('복리', '슈퍼정기예금', '울산은행', '3.30', '3.30', '1', '5', '600000000', '스마트폰', '개인(개인사업자 포함)', '자동입력', '/asset/logo/Bank/GyungNam.png'),
-    ('복리', '연금정기예금', 'KDB산업은행', '3.40', '3.40', '1', '4', '1500000000', '스마트폰', '개인(개인사업자 포함)', '자동입력', '/asset/logo/Bank/KDB.jpeg'),
-    ('단리', '단기정기예금', 'BNK부산은행', '2.65', '2.65', '3', '5', '200000000', '인터넷', '개인', '직접입력', '/asset/logo/Bank/Busan.jpg'),
-    ('복리/단리', 'e-뱅킹예금', '하나금융그룹', '3.35', '3.35', '2', '6', '500000000', '스마트폰', '개인(개인사업자 포함)', '자동입력', '/asset/logo/Bank/HANA.png'),
-    ('단리', '정기예금', '경남은행', '2.80', '2.80', '1', '5', '100000000', '인터넷', '개인', '직접입력', '/asset/logo/Bank/GyungNam.png'),
-    ('복리', '정기적금', '신협', '3.25', '3.25', '1', '6', '400000000', '스마트폰', '개인(개인사업자 포함)', '자동입력', '/asset/logo/Bank/SinHyup.png'),
-    ('단리', '우대정기예금', '새마을금고', '2.75', '2.75', '3', '4', '250000000', '인터넷', '개인', '직접입력', '/asset/logo/Bank/SaeMG.jpg'),
-    ('복리/단리', 'e-정기적금', '신협', '3.45', '3.45', '2', '6', '600000000', '스마트폰', '개인(개인사업자 포함)', '자동입력', '/asset/logo/Bank/SinHyup.png'),
-    ('단리', '정기예금', '주택금융공사', '2.90', '2.90', '3', '5', '350000000', '인터넷', '개인', '직접입력', '/asset/logo/Bank/JuTaek.png'),
-    ('복리', '프리미엄정기예금', '국민은행', '3.55', '3.55', '1', '4', '800000000', '스마트폰', '개인(개인사업자 포함)', '자동입력', '/asset/logo/Bank/KB.jpg'),
-    ('단리', '정기적금', '우리은행', '2.85', '2.85', '2', '6', '500000000', '인터넷', '개인', '직접입력', '/asset/logo/Bank/Wooribank.jpg'),
-    ('복리/단리', '인터넷정기예금', '하나은행', '3.30', '3.30', '1', '5', '300000000', '스마트폰', '개인(개인사업자 포함)', '자동입력', '/asset/logo/Bank/HANA.png'),
-    ('단리', '정기예금', '농협은행', '2.70', '2.70', '3', '6', '700000000', '인터넷', '개인', '직접입력', '/asset/logo/Bank/NH.jpg'),
-    ('복리', '정기예금', '기업은행', '3.25', '3.25', '1', '4', '400000000', '스마트폰', '개인(개인사업자 포함)', '자동입력', '/asset/logo/Bank/IBK.png'),
-    ('단리', '정기적금', 'SC제일은행', '2.75', '2.75', '3', '5', '600000000', '인터넷', '개인', '직접입력', '/asset/logo/Bank/SCbank.jpg'),
-    ('복리/단리', 'e-프리미엄예금', '대구은행', '3.20', '3.20', '2', '4', '300000000', '스마트폰', '개인(개인사업자 포함)', '자동입력', '/asset/logo/Bank/Daegu.jpg'),
-    ('단리', '정기예금', '광주은행', '2.85', '2.85', '1', '6', '500000000', '인터넷', '개인', '직접입력', '/asset/logo/Bank/GwangJu.png'),
-    ('복리', '정기적금', '전북은행', '3.35', '3.35', '2', '5', '200000000', '스마트폰', '개인(개인사업자 포함)', '자동입력', '/asset/logo/Bank/JeonBuk.png');
+    ('복리/단리', 'e-그린세이브예금', '우한국스탠다드차타드은행', '3.37', '3.37', '1', '3', '1000000000', '인터넷,스마트폰', '개인(개인사업자 포함)', 'https://www.standardchartered.co.kr/np/kr/pl/se/SavingDetail.jsp?id=2345', '/asset/logo/Bank/SCbank.jpg'),
+    ('단리', '스마트정기예금', '신한은행', '2.95', '2.95', '2', '4', '500000000', '인터넷', '개인', 'https://www.shinhansavings.com/PD_0002', '/asset/logo/Bank/Shinhan.png'),
+    ('복리', '프리미엄예금', '국민은행', '3.50', '3.50', '1', '6', '2000000000', '스마트폰', '개인(개인사업자 포함)', 'https://obank.kbstar.com/quics?page=C020702&cc=b061761:b061770&isNew=N&prcode=DP000428', '/asset/logo/Bank/KB.jpg'),
+    ('단리', '특별정기예금', '우리은행', '2.80', '2.80', '3', '5', '1500000000', '인터넷', '개인', 'https://spot.wooribank.com/pot/Dream?withyou=PODEP0019&cc=c007095:c009166;c012263:c012399&PRD_CD=P010002402&PRD_YN=Y', '/asset/logo/Bank/Wooribank.jpg'),
+    ('복리/단리', '온라인정기예금', '하나은행', '3.25', '3.25', '2', '4', '300000000', '스마트폰', '개인', 'https://www.kebhana.com/cont/mall/mall08/mall0801/mall080101/1479088_115126.jsp', '/asset/logo/Bank/HANA.png'),
+    ('복리', '우대정기예금', '농협은행', '3.15', '3.15', '1', '5', '800000000', '인터넷,스마트폰', '개인(개인사업자 포함)', 'https://smartmarket.nonghyup.com/servlet/SFSD0130R.view', '/asset/logo/Bank/NH.jpg'),
+    ('단리', '정기예금', '기업은행', '2.70', '2.70', '3', '6', '100000000', '인터넷', '개인', 'https://mybank.ibk.co.kr/uib/jsp/index.jsp', '/asset/logo/Bank/IBK.png'),
+    ('복리', '투자예금', 'SC제일은행', '3.45', '3.45', '2', '4', '1200000000', '스마트폰', '개인(개인사업자 포함)', 'https://www.standardchartered.co.kr/np/kr/pl/se/SavingList.jsp?id=list7', '/asset/logo/Bank/SCbank.jpg'),
+    ('단리', '정기적금', '대구은행', '2.85', '2.85', '3', '5', '500000000', '인터넷', '개인', 'https://www.dgb.co.kr/com_ebz_ser_main.act', '/asset/logo/Bank/Daegu.jpg'),
+    ('복리/단리', 'e-정기예금', '광주은행', '3.20', '3.20', '1', '6', '700000000', '스마트폰', '개인(개인사업자 포함)', 'https://www.kjbank.com/ib20/mnu/FPMDPTR030100', '/asset/logo/Bank/GwangJu.png'),
+    ('단리', '하이정기예금', '전북은행', '2.75', '2.75', '2', '4', '400000000', '인터넷', '개인', 'https://www.jbbank.co.kr/', '/asset/logo/Bank/JeonBuk.png'),
+    ('복리', '슈퍼정기예금', '울산은행', '3.30', '3.30', '1', '5', '600000000', '스마트폰', '개인(개인사업자 포함)', 'https://www.knbank.co.kr/ib20/mnu/FPMDPT020104000?ib20_wc=FPMDPT100MIXV00M:FPMDPT110LSTV00M&ib20_cur_mnu=FPMDPT020000000&ib20_cur_wgt=FPMDPT100MIXV00M&fnc_prd_no=#', '/asset/logo/Bank/GyungNam.png'),
+    ('복리', '연금정기예금', 'KDB산업은행', '3.40', '3.40', '1', '4', '1500000000', '스마트폰', '개인(개인사업자 포함)', 'https://banking.kdb.co.kr/bp/index.jsp', '/asset/logo/Bank/KDB.jpeg'),
+    ('단리', '단기정기예금', 'BNK부산은행', '2.65', '2.65', '3', '5', '200000000', '인터넷', '개인', 'https://www.busanbank.co.kr/ib20/mnu/FPMDPO012001002', '/asset/logo/Bank/Busan.jpg'),
+    ('복리/단리', 'e-뱅킹예금', '하나금융그룹', '3.35', '3.35', '2', '6', '500000000', '스마트폰', '개인(개인사업자 포함)', 'https://www.kebhana.com/cont/mall/mall08/mall0801/mall080101/1479088_115126.jsp', '/asset/logo/Bank/HANA.png'),
+    ('단리', '정기예금', '경남은행', '2.80', '2.80', '1', '5', '100000000', '인터넷', '개인', 'https://www.knbank.co.kr/ib20/mnu/FPMREP020101000?ib20_wc=FPMDPT110LSTV00M:FPMDPT221DETV00M&FNC_PRD_NO=0000017040&FNC_PRD_DIS_CD=01&DUP_CHK=N&ib20_redirect_org_mnu=FPMCOM990000000', '/asset/logo/Bank/GyungNam.png'),
+    ('복리', '정기적금', '신협', '3.25', '3.25', '1', '6', '400000000', '스마트폰', '개인(개인사업자 포함)', 'http://www.cu.co.kr/product/ad/fnncGoods/selectFnncGoodsDpstInfo51.do?fnncGoodsSn=1021', '/asset/logo/Bank/SinHyup.png'),
+    ('단리', '우대정기예금', '새마을금고', '2.75', '2.75', '3', '4', '250000000', '인터넷', '개인', 'https://www.kfcc.co.kr/goods/depositproductdetail.do', '/asset/logo/Bank/SaeMG.jpg'),
+    ('복리/단리', 'e-정기적금', '신협', '3.45', '3.45', '2', '6', '600000000', '스마트폰', '개인(개인사업자 포함)', 'http://www.cu.co.kr/product/ad/fnncGoods/selectFnncGoodsDpstInfo51.do?fnncGoodsSn=66', '/asset/logo/Bank/SinHyup.png'),
+    ('단리', '정기예금', '주택금융공사', '2.90', '2.90', '3', '5', '350000000', '인터넷', '개인', 'https://bank.hf.go.kr/', '/asset/logo/Bank/JuTaek.png'),
+    ('복리', '프리미엄정기예금', '국민은행', '3.55', '3.55', '1', '4', '800000000', '스마트폰', '개인(개인사업자 포함)', 'https://obank.kbstar.com/quics?page=C016613&cc=b061496:b061645&%EB%B8%8C%EB%9E%9C%EB%93%9C%EC%83%81%ED%92%88%EC%BD%94%EB%93%9C=DP01000938&%EB%85%B8%EB%93%9C%EC%BD%94%EB%93%9C=00007&prcode=DP01000938#none', '/asset/logo/Bank/KB.jpg'),
+    ('단리', '정기적금', '우리은행', '2.85', '2.85', '2', '6', '500000000', '인터넷', '개인', 'https://spot.wooribank.com/pot/Dream?withyou=PODEP0021&cc=c007095:c009166;c012263:c012399&PLM_PDCD=P010000225&PRD_CD=P010000225&ALL_GB=&depKind=A04', '/asset/logo/Bank/Wooribank.jpg'),
+    ('복리/단리', '인터넷정기예금', '하나은행', '3.30', '3.30', '1', '5', '300000000', '스마트폰', '개인(개인사업자 포함)', 'https://www.kebhana.com/cont/mall/mall08/mall0801/mall080101/1419598_115126.jsp', '/asset/logo/Bank/HANA.png'),
+    ('단리', '정기예금', '농협은행', '2.70', '2.70', '3', '6', '700000000', '인터넷', '개인', 'https://m.nhsavingsbank.co.kr/nhsbank/sa/dpisPrd/dpisPrdListView.do?prdCd=24501', '/asset/logo/Bank/NH.jpg'),
+    ('복리', '정기예금', '기업은행', '3.25', '3.25', '1', '4', '400000000', '스마트폰', '개인(개인사업자 포함)', 'https://mybank.ibk.co.kr/uib/jsp/guest/ntr/ntr70/ntr7010/PNTR701000_i2.jsp?lncd=01&grcd=21&tmcd=131&pdcd=0001&wvcd=***********&i_trns_biz_kncd=%EC%A0%95%EA%B8%B0%EC%98%88%EA%B8%88', '/asset/logo/Bank/IBK.png'),
+    ('단리', '정기적금', 'SC제일은행', '2.75', '2.75', '3', '5', '600000000', '인터넷', '개인', 'https://www.standardchartered.co.kr/np/kr/pl/se/SavingDetail.jsp?id=36', '/asset/logo/Bank/SCbank.jpg'),
+    ('복리/단리', 'e-프리미엄예금', '대구은행', '3.20', '3.20', '2', '4', '300000000', '스마트폰', '개인(개인사업자 포함)', 'https://www.dgb.co.kr/com_ebz_fpm_main.act', '/asset/logo/Bank/Daegu.jpg'),
+    ('단리', '정기예금', '광주은행', '2.85', '2.85', '1', '6', '500000000', '인터넷', '개인', 'https://www.kjbank.com/ib20/mnu/FPMDPTR030100', '/asset/logo/Bank/GwangJu.png'),
+    ('복리', '정기적금', '전북은행', '3.35', '3.35', '2', '5', '200000000', '스마트폰', '개인(개인사업자 포함)', 'https://www.jbbank.co.kr/', '/asset/logo/Bank/JeonBuk.png');
+
+CREATE TABLE `tbl_keyword` (
+                               `keno` INT NOT NULL AUTO_INCREMENT,
+                               `uno` INT NOT NULL,
+                               `keyword` VARCHAR(255) NOT NULL,
+                               `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                               PRIMARY KEY (`keno`),
+                               FOREIGN KEY (`uno`) REFERENCES `tbl_user`(`uno`)
+);
 
 INSERT INTO tbl_installment (
     installment_category,
@@ -282,40 +287,41 @@ INSERT INTO tbl_installment (
     installment_amount,
     installment_way,
     installment_target,
+    installment_link,
     installment_imgUrl
 )
     VALUE
-    ('복리/단리', '퍼스트가계적금', '한국스탠다드차타드은행', '4.75', '2.85', '1', '36','10000000', '영업점,인터넷,스마트폰', '개인(개인사업자 포함)', '/asset/logo/Bank/SCbank.jpg'),
-    ('복리', '행복적금', '신한은행', '4.50', '2.70', '1', '24', '5000000', '영업점,인터넷', '개인', '/asset/logo/Bank/Shinhan.png'),
-    ('단리', '안심적금', '우리은행', '3.90', '2.50', '1', '12', '3000000', '영업점,스마트폰', '개인', '/asset/logo/Bank/Wooribank.jpg'),
-    ('복리', '꿈나무적금', '기업은행', '4.20', '3.00', '1', '36', '20000000', '인터넷,스마트폰', '개인(개인사업자 포함)', '/asset/logo/Bank/IBK.png'),
-    ('단리', '정기적금', '하나은행', '3.80', '2.60', '1', '24', '10000000', '영업점', '개인', '/asset/logo/Bank/HANA.png'),
-    ('복리', '미래적금', '농협은행', '4.00', '2.90', '1', '12', '15000000', '인터넷', '개인', '/asset/logo/Bank/NH.jpg'),
-    ('단리', '안전적금', '광주은행', '3.70', '2.80', '1', '36', '25000000', '스마트폰', '개인', '/asset/logo/Bank/GwangJu.png'),
-    ('복리', '행복한적금', '전북은행', '4.10', '2.85', '1', '24', '5000000', '영업점,인터넷', '개인', '/asset/logo/Bank/JeonBuk.png'),
-    ('단리', '자유적금', '경남은행', '3.60', '2.70', '1', '12', '10000000', '스마트폰,인터넷', '개인', '/asset/logo/Bank/GyungNam.png'),
-    ('복리', '정성적금', '제주은행', '4.30', '2.95', '1', '36', '20000000', '영업점', '개인', '/asset/logo/Bank/JeJu.jpg'),
-    ('단리', '대출적금', '부산은행', '3.50', '2.65', '1', '24', '30000000', '스마트폰,인터넷', '개인', '/asset/logo/Bank/Busan.jpg'),
-    ('복리', '튼튼적금', '상호저축은행', '4.40', '3.05', '1', '12', '5000000', '영업점,인터넷', '개인', '/asset/logo/Bank/SangHo.jpg'),
-    ('단리', '스마트적금', '제일은행', '3.75', '2.80', '1', '36', '15000000', '인터넷,스마트폰', '개인', '/asset/logo/Bank/SCbank.jpg'),
-    ('복리', '열정적금', '신협', '4.25', '2.90', '1', '24', '10000000', '영업점', '개인', '/asset/logo/Bank/SinHyup.png'),
-    ('단리', '정확적금', '새마을금고', '3.85', '2.75', '1', '12', '20000000', '스마트폰', '개인', '/asset/logo/Bank/SaeMG.jpg'),
-    ('복리', '희망적금', '대구은행', '4.50', '3.00', '1', '36', '50000000', '인터넷,스마트폰', '개인', '/asset/logo/Bank/Daegu.jpg'),
-    ('단리', '안정적금', '제주은행', '3.70', '2.60', '1', '24', '15000000', '영업점', '개인', '/asset/logo/Bank/JeJu.jpg'),
-    ('복리', '스마일적금', '서민금융', '4.35', '2.85', '1', '12', '30000000', '인터넷', '개인', '/asset/logo/Bank/seomin.jpg'),
-    ('단리', '진심적금', '신협', '3.80', '2.70', '1', '36', '20000000', '스마트폰', '개인', '/asset/logo/Bank/SinHyup.png'),
-    ('복리', '열정가득적금', '상호저축은행', '4.55', '3.10', '1', '24', '5000000', '영업점,인터넷', '개인', '/asset/logo/Bank/SangHo.jpg'),
-    ('단리', '신뢰적금', '새마을금고', '3.65', '2.75', '1', '12', '10000000', '인터넷,스마트폰', '개인', '/asset/logo/Bank/SaeMG.jpg'),
-    ('복리', '퍼스트적금', '농협은행', '4.45', '2.90', '1', '36', '15000000', '스마트폰', '개인', '/asset/logo/Bank/NH.jpg'),
-    ('단리', '일반적금', '부산은행', '3.60', '2.70', '1', '24', '20000000', '영업점', '개인', '/asset/logo/Bank/Busan.jpg'),
-    ('복리', '미래가득적금', '경남은행', '4.50', '2.95', '1', '12', '10000000', '인터넷', '개인', '/asset/logo/Bank/GyungNam.png'),
-    ('단리', '정기적금1', '광주은행', '3.75', '2.80', '1', '36', '50000000', '스마트폰,인터넷', '개인', '/asset/logo/Bank/GwangJu.png'),
-    ('복리', '희망찬적금', '전북은행', '4.20', '3.00', '1', '24', '30000000', '영업점', '개인', '/asset/logo/Bank/JeonBuk.png'),
-    ('단리', '안정만점적금', '제주은행', '3.85', '2.65', '1', '12', '15000000', '스마트폰', '개인', '/asset/logo/Bank/JeJu.jpg'),
-    ('복리', '꿈을위한적금', '신협', '4.60', '3.10', '1', '36', '10000000', '인터넷', '개인', '/asset/logo/Bank/SinHyup.png'),
-    ('단리', '믿음적금', '새마을금고', '3.70', '2.75', '1', '24', '20000000', '영업점,스마트폰', '개인', '/asset/logo/Bank/SaeMG.jpg'),
-    ('복리', '정성가득적금', '농협은행', '4.35', '2.90', '1', '12', '5000000', '인터넷', '개인', '/asset/logo/Bank/NH.jpg'),
-    ('단리', '자유가득적금', '부산은행', '3.60', '2.65', '1', '36', '30000000', '스마트폰', '개인', '/asset/logo/Bank/Busan.jpg');
+    ('복리/단리', '퍼스트가계적금', '한국스탠다드차타드은행', '4.75', '2.85', '1', '36','10000000', '영업점,인터넷,스마트폰', '개인(개인사업자 포함)', 'https://www.standardchartered.co.kr/np/kr/pl/se/SavingDetail.jsp?id=36','/asset/logo/Bank/SCbank.jpg'),
+    ('복리', '행복적금', '신한은행', '4.50', '2.70', '1', '24', '5000000', '영업점,인터넷', '개인', 'https://bank.shinhan.com/index.jsp#020105030000', '/asset/logo/Bank/Shinhan.png'),
+    ('단리', '안심적금', '우리은행', '3.90', '2.50', '1', '12', '3000000', '영업점,스마트폰', '개인', 'https://spot.wooribank.com/pot/Dream?withyou=PODEP0021', '/asset/logo/Bank/Wooribank.jpg'),
+    ('복리', '꿈나무적금', '기업은행', '4.20', '3.00', '1', '36', '20000000', '인터넷,스마트폰', '개인(개인사업자 포함)', 'https://mybank.ibk.co.kr/uib/jsp/guest/ntr/ntr70/ntr7010/PNTR701000_i2.jsp', '/asset/logo/Bank/IBK.png'),
+    ('단리', '정기적금', '하나은행', '3.80', '2.60', '1', '24', '10000000', '영업점', '개인', 'https://www.kebhana.com/cont/mall/mall08/mall0801/mall080102/1461831_115157.jsp', '/asset/logo/Bank/HANA.png'),
+    ('복리', '미래적금', '농협은행', '4.00', '2.90', '1', '12', '15000000', '인터넷', '개인', 'https://smartmarket.nonghyup.com/servlet/SFSD0040R.view', '/asset/logo/Bank/NH.jpg'),
+    ('단리', '안전적금', '광주은행', '3.70', '2.80', '1', '36', '25000000', '스마트폰', '개인', 'https://m.kjbank.com/mweb/main/products?kind=installment_01', '/asset/logo/Bank/GwangJu.png'),
+    ('복리', '행복한적금', '전북은행', '4.10', '2.85', '1', '24', '5000000', '영업점,인터넷', '개인', 'https://www.jbbank.co.kr/', '/asset/logo/Bank/JeonBuk.png'),
+    ('단리', '자유적금', '경남은행', '3.60', '2.70', '1', '12', '10000000', '스마트폰,인터넷', '개인', 'https://www.knbank.co.kr/ib20/mnu/FPMDPT020103000?ib20_wc=FPMDPT100MIXV00M:FPMDPT110LSTV00M&ib20_cur_mnu=FPMDPT020000000&ib20_cur_wgt=FPMDPT100MIXV00M&fnc_prd_no=', '/asset/logo/Bank/GyungNam.png'),
+    ('복리', '정성적금', '제주은행', '4.30', '2.95', '1', '36', '20000000', '영업점', '개인', 'https://www.jejubank.co.kr/hmpg/prdGdnc/sid/indp.do', '/asset/logo/Bank/JeJu.jpg'),
+    ('단리', '대출적금', '부산은행', '3.50', '2.65', '1', '24', '30000000', '스마트폰,인터넷', '개인', 'https://www.busanbank.co.kr/ib20/mnu/FPMDPO012002001', '/asset/logo/Bank/Busan.jpg'),
+    ('복리', '튼튼적금', '상호저축은행', '4.40', '3.05', '1', '12', '5000000', '영업점,인터넷', '개인', 'https://www.fsb.or.kr/index.act', '/asset/logo/Bank/SangHo.jpg'),
+    ('단리', '스마트적금', '제일은행', '3.75', '2.80', '1', '36', '15000000', '인터넷,스마트폰', '개인', 'https://www.standardchartered.co.kr/np/kr/pl/se/SavingDetail.jsp?id=3860', '/asset/logo/Bank/SCbank.jpg'),
+    ('복리', '열정적금', '신협', '4.25', '2.90', '1', '24', '10000000', '영업점', '개인', 'https://bizbank.cu.co.kr/dep/EI_DEP010101_01', '/asset/logo/Bank/SinHyup.png'),
+    ('단리', '정확적금', '새마을금고', '3.85', '2.75', '1', '12', '20000000', '스마트폰', '개인', 'https://www.kfcc.co.kr/financialProduct/financialMain.do','/asset/logo/Bank/SaeMG.jpg'),
+    ('복리', '희망적금', '대구은행', '4.50', '3.00', '1', '36', '50000000', '인터넷,스마트폰', '개인', 'https://www.dgb.co.kr/com_ebz_fpm_main.act', '/asset/logo/Bank/Daegu.jpg'),
+    ('단리', '안정적금', '제주은행', '3.70', '2.60', '1', '24', '15000000', '영업점', '개인', 'https://bank.jejubank.co.kr:6443/inbank/ws/pr/pd/PRPD01001.do', '/asset/logo/Bank/JeJu.jpg'),
+    ('복리', '스마일적금', '서민금융', '4.35', '2.85', '1', '12', '30000000', '인터넷', '개인', 'https://www.kinfa.or.kr/financialProduct/smileDreamSavings.do', '/asset/logo/Bank/seomin.jpg'),
+    ('단리', '진심적금', '신협', '3.80', '2.70', '1', '36', '20000000', '스마트폰', '개인', 'https://bizbank.cu.co.kr/dep/EI_DEP010101_01', '/asset/logo/Bank/SinHyup.png'),
+    ('복리', '열정가득적금', '상호저축은행', '4.55', '3.10', '1', '24', '5000000', '영업점,인터넷', '개인', 'https://www.fsb.or.kr/index.act', '/asset/logo/Bank/SangHo.jpg'),
+    ('단리', '신뢰적금', '새마을금고', '3.65', '2.75', '1', '12', '10000000', '인터넷,스마트폰', '개인', 'https://www.kfcc.co.kr/financialProduct/financialMain.do', '/asset/logo/Bank/SaeMG.jpg'),
+    ('복리', '퍼스트적금', '농협은행', '4.45', '2.90', '1', '36', '15000000', '스마트폰', '개인', 'https://smartmarket.nonghyup.com/servlet/SFSD0040R.view', '/asset/logo/Bank/NH.jpg'),
+    ('단리', '일반적금', '부산은행', '3.60', '2.70', '1', '24', '20000000', '영업점', '개인', 'https://www.busanbank.co.kr/ib20/mnu/FPMRDP001001001#SCH_RESULT_CNT', '/asset/logo/Bank/Busan.jpg'),
+    ('복리', '미래가득적금', '경남은행', '4.50', '2.95', '1', '12', '10000000', '인터넷', '개인', 'https://www.knbank.co.kr/ib20/mnu/FPMDPT020103000?ib20_wc=FPMDPT100MIXV00M:FPMDPT110LSTV00M&ib20_cur_mnu=FPMDPT020000000&ib20_cur_wgt=FPMDPT100MIXV00M&fnc_prd_no=', '/asset/logo/Bank/GyungNam.png'),
+    ('단리', '정기적금1', '광주은행', '3.75', '2.80', '1', '36', '50000000', '스마트폰,인터넷', '개인', 'https://www.kjbank.com/ib20/mnu/FPMDPTR030100', '/asset/logo/Bank/GwangJu.png'),
+    ('복리', '희망찬적금', '전북은행', '4.20', '3.00', '1', '24', '30000000', '영업점', '개인', 'https://www.jbbank.co.kr/', '/asset/logo/Bank/JeonBuk.png'),
+    ('단리', '안정만점적금', '제주은행', '3.85', '2.65', '1', '12', '15000000', '스마트폰', '개인', 'https://www.jejubank.co.kr/hmpg/prdGdnc/sid/mndp.do?mode=detail&prdId=SID_bf4c7b51744f4770acbd56a191c2d008', '/asset/logo/Bank/JeJu.jpg'),
+    ('복리', '꿈을위한적금', '신협', '4.60', '3.10', '1', '36', '10000000', '인터넷', '개인', 'https://bizbank.cu.co.kr/dep/EI_DEP010101_01', '/asset/logo/Bank/SinHyup.png'),
+    ('단리', '믿음적금', '새마을금고', '3.70', '2.75', '1', '24', '20000000', '영업점,스마트폰', '개인', 'https://www.kfcc.co.kr/financialProduct/financialMain.do', '/asset/logo/Bank/SaeMG.jpg'),
+    ('복리', '정성가득적금', '농협은행', '4.35', '2.90', '1', '12', '5000000', '인터넷', '개인', 'https://m.nhsavingsbank.co.kr/nhsbank/sa/dpisPrd/dpisPrdListView.do', '/asset/logo/Bank/NH.jpg'),
+    ('단리', '자유가득적금', '부산은행', '3.60', '2.65', '1', '36', '30000000', '스마트폰', '개인', 'https://www.busanbank.co.kr/ib20/mnu/FPMDPO012001002', '/asset/logo/Bank/Busan.jpg');
 
 INSERT INTO tbl_fund (
     fund_category,
@@ -1367,38 +1373,38 @@ INSERT INTO tbl_fund_chart (fund_name, fund_datetime, fund_val, ben_val, type_va
                                                                                        ('미래에셋코어테크증권자투자신탁(주식)종류A-e', '2024-08-31', 66.95, 66.75, 41.45),
                                                                                        ('미래에셋코어테크증권자투자신탁(주식)종류A-e', '2024-09-01', 65.50, 65.00, 40.00);
 
-INSERT INTO tbl_stock (stock_symbol, stock_name, stock_price, price_change_rate, stock_volume, stock_imgUrl)
+INSERT INTO tbl_stock (stock_symbol, stock_name, stock_price, price_change_rate, stock_volume, stock_sales, stock_profit, stock_income, stock_imgUrl)
 VALUES
-    ('005930', '삼성전자', 65200, -1.66, 8175458, '/asset/logo/Stock/Samsung.jpg'),
-    ('000660', 'SK하이닉스', 164800, -2.37, 2036605, '/asset/logo/Stock/SKStock.jpg'),
-    ('373220', 'LG에너지솔루션', 405000, -2.17, 93841, '/asset/logo/Stock/LG.png'),
-    ('207940', '삼성바이오로직스', 986000, 1.54, 19369, '/asset/logo/Stock/Samsung.jpg'),
-    ('005380', '현대차', 236000, 1.72, 271134, '/asset/logo/Stock/Kia.jpg'),
-    ('005935', '삼성전자우', 53000, -0.75, 622801, '/asset/logo/Stock/Samsung.jpg'),
-    ('068270', '셀트리온', 194600, -0.51, 106123, '/asset/logo/Stock/'),
-    ('000270', '기아', 100500, 1.41, 530603, '/asset/logo/Stock/'),
-    ('105560', 'KB금융', 80700, 3.33, 587431, '/asset/logo/Stock/KB.jpg'),
-    ('005490', 'POSCO홀딩스', 365000, 1.81, 169670, '/asset/logo/Stock/PoscoStock.jpg'),
-    ('055550', '신한지주', 55400, 2.78, 330104, '/asset/logo/Stock/Shinhan.png'),
-    ('028260', '삼성물산', 148800, -0.20, 51780, '/asset/logo/Stock/Samsung.jpg'),
-    ('035420', 'NAVER', 160100, 0.06, 114680, '/asset/logo/Stock/naver.png'),
-    ('006400', '삼성SDI', 365500, 0.41, 137356, '/asset/logo/Stock/Samsung.jpg'),
-    ('051910', 'LG화학', 322000, 0.47, 59832, '/asset/logo/Stock/LG.png'),
-    ('012330', '현대모비스', 221500, 3.75, 141360, '/asset/logo/Stock/HyundaiStock.jpg'),
-    ('032830', '삼성생명', 96400, 0.21, 49934, '/asset/logo/Stock/Samsung.jpg'),
-    ('003670', '포스코퓨처엠', 229000, -2.14, 149171, '/asset/logo/Stock/PsocoFuture.jpg'),
-    ('138040', '메리츠금융지주', 92400, 2.33, 70403, '/asset/logo/Stock/Meritz.png'),
-    ('086790', '하나금융지주', 60800, 4.29, 384681, '/asset/logo/Stock/Hana.png'),
-    ('066570', 'LG전자', 104300, 1.86, 227424, '/asset/logo/Stock/LG.png'),
-    ('196170', '알테오젠', 320000, 1.27, 208997, '/asset/logo/Stock/Alteogen.jpg'),
-    ('000810', '삼성화재', 349000, -0.43, 27072, '/asset/logo/Stock/Samsung.jpg'),
-    ('329180', 'HD현대중공업', 185200, 4.10, 121654, '/asset/logo/Stock/HDJung.jpg'),
-    ('035720', '카카오', 35800, 1.27, 281308, '/asset/logo/Stock/Kakao.jpg'),
-    ('259960', '크래프톤', 327000, 1.87, 19316, '/asset/logo/Stock/Krafton.jpg'),
-    ('247540', '에코프로비엠', 157300, 0.00, 207137, '/asset/logo/Stock/EcoPro.jpg'),
-    ('012450', '한화에어로스페이스', 290000, 0.00, 0, '/asset/logo/Stock/HanwhaAero.png'),
-    ('033780', 'KT&G', 110100, 0.09, 56622, '/asset/logo/Stock/KTG.png'),
-    ('015760', '한국전력', 22050, 0.46, 352370, '/asset/logo/Stock/KoreaElec.jpg');
+    ('005930', '삼성전자', 65200, -1.66, 8175458, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/Samsung.jpg'),
+    ('000660', 'SK하이닉스', 164800, -2.37, 2036605, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/SKStock.jpg'),
+    ('373220', 'LG에너지솔루션', 405000, -2.17, 93841, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/LG.png'),
+    ('207940', '삼성바이오로직스', 986000, 1.54, 19369, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/Samsung.jpg'),
+    ('005380', '현대차', 236000, 1.72, 271134, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/Kia.jpg'),
+    ('005935', '삼성전자우', 53000, -0.75, 622801, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/Samsung.jpg'),
+    ('068270', '셀트리온', 194600, -0.51, 106123, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/CellTrionStock.jpg'),
+    ('000270', '기아', 100500, 1.41, 530603, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/Kia.jpg'),
+    ('105560', 'KB금융', 80700, 3.33, 587431, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/KB.jpg'),
+    ('005490', 'POSCO홀딩스', 365000, 1.81, 169670, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/PoscoStock.jpg'),
+    ('055550', '신한지주', 55400, 2.78, 330104, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/Shinhan.png'),
+    ('028260', '삼성물산', 148800, -0.20, 51780, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/Samsung.jpg'),
+    ('035420', 'NAVER', 160100, 0.06, 114680, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/naver.png'),
+    ('006400', '삼성SDI', 365500, 0.41, 137356, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/Samsung.jpg'),
+    ('051910', 'LG화학', 322000, 0.47, 59832, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/LG.png'),
+    ('012330', '현대모비스', 221500, 3.75, 141360, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/HyundaiStock.jpg'),
+    ('032830', '삼성생명', 96400, 0.21, 49934, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/Samsung.jpg'),
+    ('003670', '포스코퓨처엠', 229000, -2.14, 149171, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/PsocoFuture.jpg'),
+    ('138040', '메리츠금융지주', 92400, 2.33, 70403, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/Meritz.png'),
+    ('086790', '하나금융지주', 60800, 4.29, 384681, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/Hana.png'),
+    ('066570', 'LG전자', 104300, 1.86, 227424, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/LG.png'),
+    ('196170', '알테오젠', 320000, 1.27, 208997, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/Alteogen.jpg'),
+    ('000810', '삼성화재', 349000, -0.43, 27072, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/Samsung.jpg'),
+    ('329180', 'HD현대중공업', 185200, 4.10, 121654, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/HDJung.jpg'),
+    ('035720', '카카오', 35800, 1.27, 281308, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/Kakao.jpg'),
+    ('259960', '크래프톤', 327000, 1.87, 19316, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/Krafton.jpg'),
+    ('247540', '에코프로비엠', 157300, 0.00, 207137, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/EcoPro.jpg'),
+    ('012450', '한화에어로스페이스', 290000, 0.00, 0, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/HanwhaAero.png'),
+    ('033780', 'KT&G', 110100, 0.09, 56622, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/KTG.png'),
+    ('015760', '한국전력', 22050, 0.46, 352370, '74조원', '10조원', '9.8조원', '/asset/logo/Stock/KoreaElec.jpg');
 
 INSERT INTO tbl_stock_chart (sno, stock_datetime, stock_price)
 VALUES
@@ -1572,10 +1578,10 @@ VALUES
 
 INSERT INTO tbl_forex(forex_name, forex_basic_rate, forex_buy, forex_sell, forex_imgUrl) VALUE
     ('중국 위안(CNH)',190.39,188.48,192.29, '/asset/logo/Forex/CNH.png'),
-    ('유럽 유로(EUR)',1495.24,1480.28,1510.19, '/asset/logo/Forex/EU.jpg'),
+    ('유럽 유로(EUR)',1495.24,1480.28,1510.19, '/asset/logo/Forex/EUR.jpg'),
     ('영국 파운드(GBP)',1746.21,1728.74,1763.67, '/asset/logo/Forex/GBP.png'),
-    ('스위스 프랑(CHF)',929.08,919.78,938.37, '/asset/logo/Forex/Japan.png'),
-    ('미국 달러(USD)',1367.70,1354.02,1381.37, '/asset/logo/Forex/USA.png');
+    ('일본 엔(JPY)',929.08,919.78,938.37, '/asset/logo/Forex/JPY.png'),
+    ('미국 달러(USD)',1367.70,1354.02,1381.37, '/asset/logo/Forex/USD.png');
 
 INSERT INTO `tbl_forex_chart` (forex_basic_rate, forex_datetime, feno) VALUES
                                                                            (187.96, '2024-09-13', 1),
@@ -1931,97 +1937,9 @@ insert into tbl_type value (default, '외환');
 --                                                           (2, 3, '3번 주식, 최근 변동성이 커서 대응 전략을 고민 중입니다.'),
 --                                                           (1, 4, '4번 주식의 배당금 정책이 궁금합니다.'),
 --                                                           (2, 5, '5번 주식, 중장기적인 투자 계획에 대한 의견 부탁드립니다.');
--- 스프링 배치 기본 스키마 (MySQL)
-CREATE TABLE BATCH_JOB_INSTANCE  (
-                                     JOB_INSTANCE_ID BIGINT  NOT NULL PRIMARY KEY ,
-                                     VERSION BIGINT ,
-                                     JOB_NAME VARCHAR(100) NOT NULL,
-                                     JOB_KEY VARCHAR(32) NOT NULL,
-                                     constraint JOB_INST_UN unique (JOB_NAME, JOB_KEY)
-);
 
-CREATE TABLE BATCH_JOB_EXECUTION  (
-                                      JOB_EXECUTION_ID BIGINT  NOT NULL PRIMARY KEY ,
-                                      VERSION BIGINT  ,
-                                      JOB_INSTANCE_ID BIGINT NOT NULL,
-                                      CREATE_TIME DATETIME NOT NULL,
-                                      START_TIME DATETIME DEFAULT NULL ,
-                                      END_TIME DATETIME DEFAULT NULL ,
-                                      STATUS VARCHAR(10) ,
-                                      EXIT_CODE VARCHAR(2500) ,
-                                      EXIT_MESSAGE VARCHAR(2500) ,
-                                      LAST_UPDATED DATETIME,
-                                      JOB_CONFIGURATION_LOCATION VARCHAR(2500) NULL,
-                                      constraint JOB_INST_EXEC_FK foreign key (JOB_INSTANCE_ID)
-                                          references BATCH_JOB_INSTANCE(JOB_INSTANCE_ID)
-);
-
-CREATE TABLE BATCH_JOB_EXECUTION_PARAMS  (
-                                             JOB_EXECUTION_ID BIGINT NOT NULL ,
-                                             TYPE_CD VARCHAR(6) NOT NULL ,
-                                             KEY_NAME VARCHAR(100) NOT NULL ,
-                                             STRING_VAL VARCHAR(250) ,
-                                             DATE_VAL DATETIME DEFAULT NULL ,
-                                             LONG_VAL BIGINT ,
-                                             DOUBLE_VAL DOUBLE PRECISION ,
-                                             IDENTIFYING CHAR(1) NOT NULL ,
-                                             constraint JOB_EXEC_PARAMS_FK foreign key (JOB_EXECUTION_ID)
-                                                 references BATCH_JOB_EXECUTION(JOB_EXECUTION_ID)
-);
-
-CREATE TABLE BATCH_STEP_EXECUTION  (
-                                       STEP_EXECUTION_ID BIGINT NOT NULL PRIMARY KEY ,
-                                       VERSION BIGINT NOT NULL,
-                                       STEP_NAME VARCHAR(100) NOT NULL,
-                                       JOB_EXECUTION_ID BIGINT NOT NULL,
-                                       START_TIME DATETIME NOT NULL ,
-                                       END_TIME DATETIME DEFAULT NULL ,
-                                       STATUS VARCHAR(10) ,
-                                       COMMIT_COUNT BIGINT ,
-                                       READ_COUNT BIGINT ,
-                                       FILTER_COUNT BIGINT ,
-                                       WRITE_COUNT BIGINT ,
-                                       READ_SKIP_COUNT BIGINT ,
-                                       WRITE_SKIP_COUNT BIGINT ,
-                                       PROCESS_SKIP_COUNT BIGINT ,
-                                       ROLLBACK_COUNT BIGINT ,
-                                       EXIT_CODE VARCHAR(2500) ,
-                                       EXIT_MESSAGE VARCHAR(2500) ,
-                                       LAST_UPDATED DATETIME,
-                                       constraint JOB_EXEC_STEP_FK foreign key (JOB_EXECUTION_ID)
-                                           references BATCH_JOB_EXECUTION(JOB_EXECUTION_ID)
-);
-
-CREATE TABLE BATCH_STEP_EXECUTION_CONTEXT  (
-                                               STEP_EXECUTION_ID BIGINT NOT NULL PRIMARY KEY,
-                                               SHORT_CONTEXT VARCHAR(2500) NOT NULL,
-                                               SERIALIZED_CONTEXT TEXT ,
-                                               constraint STEP_EXEC_CTX_FK foreign key (STEP_EXECUTION_ID)
-                                                   references BATCH_STEP_EXECUTION(STEP_EXECUTION_ID)
-);
-
-CREATE TABLE BATCH_JOB_EXECUTION_CONTEXT  (
-                                              JOB_EXECUTION_ID BIGINT NOT NULL PRIMARY KEY,
-                                              SHORT_CONTEXT VARCHAR(2500) NOT NULL,
-                                              SERIALIZED_CONTEXT TEXT ,
-                                              constraint JOB_EXEC_CTX_FK foreign key (JOB_EXECUTION_ID)
-                                                  references BATCH_JOB_EXECUTION(JOB_EXECUTION_ID)
-);
-
-CREATE TABLE BATCH_JOB_SEQ (
-                               ID BIGINT NOT NULL,
-                               UNIQUE KEY (ID)
-);
-
-INSERT INTO BATCH_JOB_SEQ VALUES(0);
-
-CREATE TABLE BATCH_JOB_EXECUTION_SEQ (
-                                         ID BIGINT NOT NULL,
-                                         UNIQUE KEY (ID)
-);
-
-INSERT INTO BATCH_JOB_EXECUTION_SEQ VALUES(0);
-
-
--- 초기값 삽입
-INSERT INTO BATCH_JOB_EXECUTION_SEQ (ID) VALUES (1);
+# insert into `tbl_community_like` (`bno`, `uno`) values
+#                                                     (2, 2),
+#                                                     (7, 2),
+#                                                     (11,1),
+#                                                     (1,1);
