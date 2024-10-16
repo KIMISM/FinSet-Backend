@@ -7,10 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Dict {
+public class DictDTO {
     private long dino;
     private String word;
     private String content;
+    int status;
 }
-
-

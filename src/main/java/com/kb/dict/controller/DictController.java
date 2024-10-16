@@ -1,6 +1,7 @@
 package com.kb.dict.controller;
 
 import com.kb.dict.dto.Dict;
+import com.kb.dict.dto.DictDTO;
 import com.kb.dict.mapper.DictMapper;
 import com.kb.dict.service.DictService;
 import com.kb.dict.service.DictWishService;
@@ -30,6 +31,7 @@ public class DictController {
 
     @GetMapping("")
     public ResponseEntity<List<Dict>> findAll() {
+
         return ResponseEntity.ok(service.findAll());
     }
 
@@ -39,24 +41,23 @@ public class DictController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Dict>> search(@RequestParam("word") String word) {
+    public ResponseEntity<List<DictDTO>> search(@RequestParam("word") String word, @AuthenticationPrincipal Member member) {
         try {
+            long uno = member.getUno();
 
             word=word.replaceAll("\n", "");
-            List<Dict> dict = service.search(word);
+            List<DictDTO> dict = service.search(word, uno);
             return ResponseEntity.ok(dict);
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-
+    // dino -> dwno 추출하고 -> 즐겨찾기 수정
     @PutMapping("/{dino}")
-    public ResponseEntity<Dict> updateStatus(@PathVariable("dino") long dino, @RequestBody Dict dict, @AuthenticationPrincipal Member principal) {
+    public ResponseEntity<Integer> updateWishDict(@PathVariable("dino") long dino, @RequestBody Dict dict, @AuthenticationPrincipal Member principal) {
         dict.setDino(dino);
         long uno=principal.getUno();
-        dict.setUno(uno);
-        Dict updatedDict = service.updateStatus(dict);
-        return ResponseEntity.ok(updatedDict);
+        return ResponseEntity.ok(service.updateWishDict(dict, uno));
     }
 
 

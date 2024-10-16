@@ -1,6 +1,7 @@
 package com.kb.dict.service;
 
 import com.kb.dict.dto.Dict;
+import com.kb.dict.dto.DictDTO;
 import com.kb.dict.dto.DictWish;
 import com.kb.dict.mapper.DictMapper;
 import com.kb.dict.mapper.DictWishMapper;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -21,17 +23,17 @@ import java.util.Optional;
 @Service
 public class DictService {
     private final DictMapper mapper;
-
     private final DictWishMapper wishMapper;
 
 
     public List<Dict> findAll() {
-        List<Dict> dict = mapper.selectAll();
-        if (dict.isEmpty()) {
-            throw new NoSuchElementException();
+        List<Dict> dicts = mapper.selectAll();
 
+        if (dicts.isEmpty()) {
+            throw new NoSuchElementException();
+            //
         }else {
-            return dict;
+            return dicts;
         }
 
     }
@@ -39,38 +41,59 @@ public class DictService {
         return mapper.selectById(id);
     }
 
-    public List<Dict> search(String word) {
+    public List<DictDTO> search(String word, long uno) {
         List<Dict> dict = mapper.Search(word);
-        if (dict.isEmpty()) {
+        List<DictDTO> dictDTOs = new ArrayList<>();
+
+        for (Dict d : dict) {
+            DictWish dictWish = new DictWish();
+            DictDTO dictDTO = new DictDTO();
+
+            // dict DTO 정의
+            dictWish.setUno(uno);
+            dictWish.setDino(d.getDino());
+            int size= wishMapper.getWishByDino(dictWish) > 0 ? 1 : 0;
+            dictDTO.setWord(d.getWord());
+            dictDTO.setContent(d.getContent());
+            dictDTO.setDino(d.getDino());
+            dictDTO.setStatus(size);
+            dictDTOs.add(dictDTO);
+        }
+
+        if (dictDTOs.isEmpty()) {
             throw new NoSuchElementException();
         } else {
-            return dict;
+            return dictDTOs;
         }
     }
 
+    // 즐겨찾기 추가, 제거
+    public int updateWishDict(Dict dict, long uno) {
 
-    public Dict updateStatus(Dict dict ) {
-        System.out.println("Current status: " + dict.getStatus() + ", dino: " + dict.getDino()+ ", uno: " + dict.getUno());
-
-        List<DictWish> dictWishList = wishMapper.getList(dict.getUno());
+        List<DictWish> dictWishList = wishMapper.getList(uno);
         long orderSize= dictWishList.size();
         DictWish dictWish = new DictWish();
         dictWish.setDino(dict.getDino());
-        dictWish.setUno(dict.getUno());
+        dictWish.setUno(uno);
         dictWish.setDictOrder(orderSize+1);
 
-        if (dict.getStatus() == 0) {
-            dict.setStatus(1);  // dict 객체의 속성은 변하지만 db 데이터는 변동 X
+        int result=0;
+        int size= wishMapper.getWishByDino(dictWish);
+        System.out.println("Dino : "+dict.getDino());
+        System.out.println("size: "+size);
 
-            wishMapper.insertWish(dictWish);
-            wishMapper.updateStatus(dict);  // updateStatus를 해야 db의 status 변경됨
-        } else if (dict.getStatus() == 1) {
-            dict.setStatus(0);  // dict 객체의 속성은 변하지만 db 데이터는 변동 X
-            wishMapper.deleteWish(dict);
-            wishMapper.updateStatus(dict);  // updateStatus를 해야 db의 status 변경됨
+        if(size<=0) {
+            // 즐겨찾기 추가
+            result= wishMapper.insertWish(dictWish);
         }
+        else if(size>0) {
+            // 즐겨찾기 제거
+            result= wishMapper.deleteWish(dictWish);
+        }
+        // 오류나면 변경
+        if(result==0) throw new NoSuchElementException();
 
 
-        return dict;
+        return result;
     }
 }
